@@ -10,7 +10,7 @@ add_cxx_files("${PROJECT_NAME}")
 
 # Generate configuration files
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Plugin.h.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/Plugin.h" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/version.rc" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/version.rc" @ONLY)
 
 # Add generated files to the target
 target_sources("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/cmake/Plugin.h ${CMAKE_CURRENT_BINARY_DIR}/cmake/version.rc)
@@ -66,7 +66,18 @@ find_package(DirectXTK CONFIG REQUIRED)
 
 # Include directories and libraries
 target_include_directories("${PROJECT_NAME}" PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# Add binary dir so generated Plugin.h is found when including "Plugin.h"
 target_include_directories("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/cmake ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Link libraries
 target_link_libraries("${PROJECT_NAME}" PUBLIC CommonLibSSE::CommonLibSSE)
+
+# Post-build: copy DLL into Mod Organizer 2 mods folder (SKSE/Plugins)
+set(MO2_OUTPUT_DIR "E:/Skyrim Modding/Portable Instances/MO2 - Dev Instance/mods/Hold on a second/SKSE/Plugins")
+add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${MO2_OUTPUT_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:${PROJECT_NAME}>"
+            "${MO2_OUTPUT_DIR}/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
+    COMMENT "Copying built DLL to MO2 mods folder: ${MO2_OUTPUT_DIR}"
+)

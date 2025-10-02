@@ -15,5 +15,5 @@ namespace Plugin
 		// clang-format on
 	};
 
-	inline constexpr auto NAME = "@PROJECT_NAME@"sv;
+	inline constexpr auto NAME = "@PLUGIN_NAME@"sv;
 }
