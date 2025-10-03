@@ -7,6 +7,7 @@ Useful if you want to save, tweak settings, or just step away without being lock
 - Open the system menu during NPC dialogue.
 - Dialogue resumes normally after closing the menu.
 - Script-free, lightweight SKSE plugin.
+- no saving possible during dialogue, so no risk of save corruption.
 
 ## Requirements
 - Skyrim SE or AE
