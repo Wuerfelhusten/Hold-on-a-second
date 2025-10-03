@@ -73,7 +73,7 @@ target_include_directories("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
 target_link_libraries("${PROJECT_NAME}" PUBLIC CommonLibSSE::CommonLibSSE)
 
 # Post-build: copy DLL into Mod Organizer 2 mods folder (SKSE/Plugins)
-set(MO2_OUTPUT_DIR "E:/Skyrim Modding/Portable Instances/MO2 - Dev Instance/mods/Hold on a second/SKSE/Plugins")
+set(MO2_OUTPUT_DIR "E:/Skyrim Modding/Portable Instances/MO2 - 1.6.1170 Test Instance/mods/Hold on a sec/SKSE/Plugins")
 add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${MO2_OUTPUT_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

@@ -27,7 +27,16 @@ namespace
 				return false;
 			}
 			const auto ui = RE::UI::GetSingleton();
-			if (!ui || !ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) {
+			if (!ui) {
+				return false;
+			}
+
+			// If BarterMenu is open, do not process so ESC can close it normally
+			if (ui->IsMenuOpen(RE::BarterMenu::MENU_NAME)) {
+				return false;
+			}
+
+			if (!ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) {
 				return false;
 			}
 			if (ui->IsMenuOpen(RE::JournalMenu::MENU_NAME)) {
@@ -58,8 +67,11 @@ namespace
 		bool ProcessButton(RE::ButtonEvent* a_event) override
 		{
 			const auto ui = RE::UI::GetSingleton();
-			if (ui && ui->IsMenuOpen(RE::JournalMenu::MENU_NAME)) {
-				return false;
+			if (ui) {
+				// If Journal or Barter is open, don't consume the input
+				if (ui->IsMenuOpen(RE::JournalMenu::MENU_NAME) || ui->IsMenuOpen(RE::BarterMenu::MENU_NAME)) {
+					return false;
+				}
 			}
 			if (!a_event || !a_event->IsDown() || !ui || ui->IsPauseMenuDisabled()) {
 				return true;
