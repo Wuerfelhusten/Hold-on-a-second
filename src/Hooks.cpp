@@ -14,8 +14,6 @@ namespace Hooks
 				constexpr RE::InputEvent* const dummy[] = { nullptr };
 				func(dispatcher, dummy);
 
-				SKSE::log::info("Open journal");
-
 				blocker->OpenJournalMenu();
 			}
 			else
@@ -45,7 +43,6 @@ namespace Hooks
 			const auto type = a_message.type;
 			if (type == RE::UI_MESSAGE_TYPE::kHide || type == RE::UI_MESSAGE_TYPE::kForceHide)
 			{
-				SKSE::log::info("reset voice block");
 				DialogueEscBlocker::GetSingleton()->m_blockVoiceSkip = false;
 			}
 
