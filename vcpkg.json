@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version-string": "1.0.0",
+  "version-string": "1.1.0",
   "description": "CLib NG example plugin",
   "license": "GPL-3.0",
   "dependencies": [
