@@ -1,8 +1,20 @@
 #pragma once
-#include "PCH.h"
 
-namespace HOAS
+class DialogueEscBlocker : public REX::Singleton<DialogueEscBlocker>
 {
-	// Register the Dialogue ESC blocker once the game data is loaded.
-	void Install();
-}
+public:
+
+	bool ProcessInputEvents(RE::InputEvent* const* a_events);
+	void OpenJournalMenu();
+
+	bool m_blockVoiceSkip = false;
+
+private:
+	// Open the Journal menu using the map menu callback
+	static void ToggleOpenJournal(bool unk1)
+	{
+		using func_t = decltype(&ToggleOpenJournal);
+		static REL::Relocation<func_t> func{ RELOCATION_ID(52428, 53327) };
+		func(unk1);
+	}
+};

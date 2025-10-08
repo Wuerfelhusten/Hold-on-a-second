@@ -1,116 +1,51 @@
-#include "PCH.h"
 #include "DialogueEscBlocker.h"
 
-namespace
-{
-	// Open the Journal menu using the native callback (same path as the map uses).
-	static void OpenJournalViaCallback()
-	{
-		using func_t = void(*)(bool);
-		static REL::Relocation<func_t> toggleOpenJournal{ RELOCATION_ID(52428, 53327) };
-		toggleOpenJournal(true);
+bool DialogueEscBlocker::ProcessInputEvents(RE::InputEvent* const* a_events) {
+
+	constexpr std::array badMenus{
+		RE::BarterMenu::MENU_NAME,
+		RE::JournalMenu::MENU_NAME,
+		RE::GiftMenu::MENU_NAME
+	};
+
+	const auto ui = RE::UI::GetSingleton();
+	if (!ui || !ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME) || std::ranges::any_of(badMenus, [&](const auto& menuName) { return ui->IsMenuOpen(menuName); })) {
+		return false;
 	}
 
-	class DialogueEscBlocker final : public RE::MenuEventHandler
-	{
-	public:
-		static DialogueEscBlocker* GetSingleton()
-		{
-			static DialogueEscBlocker instance;
-			return std::addressof(instance);
+	for (auto event = *a_events; event; event = event->next) {
+
+		if (event->GetEventType() != RE::INPUT_EVENT_TYPE::kButton) {
+			continue;
 		}
 
-		// Process keyboard ESC (Cancel) or gamepad Menu while DialogueMenu is open.
-		bool CanProcess(RE::InputEvent* a_event) override
-		{
-			if (!a_event) {
-				return false;
-			}
-			const auto ui = RE::UI::GetSingleton();
-			if (!ui) {
-				return false;
-			}
+		const auto button = event->AsButtonEvent();
+		if (!button)
+			continue;
 
-			// If BarterMenu is open, do not process so ESC can close it normally
-			if (ui->IsMenuOpen(RE::BarterMenu::MENU_NAME)) {
-				return false;
-			}
-
-			if (!ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) {
-				return false;
-			}
-			if (ui->IsMenuOpen(RE::JournalMenu::MENU_NAME)) {
-				return false;
-			}
-			if (a_event->GetEventType() != RE::INPUT_EVENT_TYPE::kButton) {
-				return false;
-			}
-
-			auto* btn = static_cast<RE::ButtonEvent*>(a_event);
-			const auto device = btn->GetDevice();
-
-			// Keyboard: ESC (Cancel)
-			if (device == RE::INPUT_DEVICE::kKeyboard) {
-				const auto id = btn->GetIDCode();
-				const bool isEsc = id == static_cast<std::uint32_t>(REX::W32::DIK_ESCAPE);
-				return isEsc && btn->QUserEvent() == RE::BSFixedString("Cancel");
-			}
-
-			// Gamepad: specific button id (16)
-			if (device == RE::INPUT_DEVICE::kGamepad) {
-				return btn->GetIDCode() == 16;
-			}
-
-			return false;
+		if (!button->IsDown()) {
+			continue;
 		}
 
-		bool ProcessButton(RE::ButtonEvent* a_event) override
-		{
-			const auto ui = RE::UI::GetSingleton();
-			if (ui) {
-				// If Journal or Barter is open, don't consume the input
-				if (ui->IsMenuOpen(RE::JournalMenu::MENU_NAME) || ui->IsMenuOpen(RE::BarterMenu::MENU_NAME)) {
-					return false;
-				}
-			}
-			if (!a_event || !a_event->IsDown() || !ui || ui->IsPauseMenuDisabled()) {
-				return true;
-			}
+		const auto device = button->GetDevice();
 
-			auto* btn = static_cast<RE::ButtonEvent*>(a_event);
-			const auto device = btn->GetDevice();
+		// Keyboard: ESC (Cancel)
+		if (device == RE::INPUT_DEVICE::kKeyboard) {
+			const auto id = button->GetIDCode();
+			const bool isEsc = id == static_cast<std::uint32_t>(REX::W32::DIK_ESCAPE);
 
-			if (device == RE::INPUT_DEVICE::kKeyboard) {
-				const auto id = btn->GetIDCode();
-				const bool isEsc = id == static_cast<std::uint32_t>(REX::W32::DIK_ESCAPE);
-				if (isEsc && btn->QUserEvent() == RE::BSFixedString("Cancel")) {
-					SKSE::log::info("[DialogueEscBlocker] Open Journal (keyboard ESC)");
-					OpenJournalViaCallback();
-				}
-			}
-			else if (device == RE::INPUT_DEVICE::kGamepad) {
-				if (btn->GetIDCode() == 16) {
-					SKSE::log::info("[DialogueEscBlocker] Open Journal (gamepad id=16)");
-					OpenJournalViaCallback();
-				}
-			}
-
-			return true;
+			return isEsc && button->QUserEvent() == RE::UserEvents::GetSingleton()->cancel;
 		}
-	};
+		else if (device == RE::INPUT_DEVICE::kGamepad) {
+			return button->GetIDCode() == 16;
+		}
+	}
+
+	return false;
 }
 
-void HOAS::Install()
+void DialogueEscBlocker::OpenJournalMenu()
 {
-	if (const auto controls = RE::MenuControls::GetSingleton()) {
-		auto* h = DialogueEscBlocker::GetSingleton();
-		if (!h->registered) {
-			controls->AddHandler(h);
-			SKSE::log::info("[DialogueEscBlocker] Handler added");
-		}
-		controls->RegisterHandler(h);
-		SKSE::log::info("[DialogueEscBlocker] Handler registered");
-	} else {
-		SKSE::log::warn("[DialogueEscBlocker] MenuControls not available at install time");
-	}
+	ToggleOpenJournal(true);
+	m_blockVoiceSkip = true;
 }
