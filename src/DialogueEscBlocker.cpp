@@ -2,7 +2,7 @@
 
 bool DialogueEscBlocker::ProcessInputEvents(RE::InputEvent* const* a_events) {
 
-	constexpr std::array badMenus{
+	static constexpr std::array badMenus{
 		RE::BarterMenu::MENU_NAME,
 		RE::JournalMenu::MENU_NAME,
 		RE::GiftMenu::MENU_NAME
@@ -46,6 +46,6 @@ bool DialogueEscBlocker::ProcessInputEvents(RE::InputEvent* const* a_events) {
 
 void DialogueEscBlocker::OpenJournalMenu()
 {
-	ToggleOpenJournal(true);
 	m_blockVoiceSkip = true;
+	ToggleOpenJournal(true);
 }
