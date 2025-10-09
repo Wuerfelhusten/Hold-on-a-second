@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(HoldOnASec VERSION 1.0.0 LANGUAGES CXX)
+project(HoldOnASec VERSION 1.0.3 LANGUAGES CXX)
 
 # Set your project version and specify C++ standard
 set(CMAKE_CXX_STANDARD 23)

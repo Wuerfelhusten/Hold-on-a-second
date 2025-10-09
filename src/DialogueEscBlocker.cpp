@@ -31,8 +31,8 @@ namespace
 				return false;
 			}
 
-			// If BarterMenu is open, do not process so ESC can close it normally
-			if (ui->IsMenuOpen(RE::BarterMenu::MENU_NAME)) {
+			// If BarterMenu or GiftMenu is open, do not process so ESC can close it normally
+			if (ui->IsMenuOpen(RE::BarterMenu::MENU_NAME) || ui->IsMenuOpen(RE::GiftMenu::MENU_NAME)) {
 				return false;
 			}
 
@@ -68,8 +68,8 @@ namespace
 		{
 			const auto ui = RE::UI::GetSingleton();
 			if (ui) {
-				// If Journal or Barter is open, don't consume the input
-				if (ui->IsMenuOpen(RE::JournalMenu::MENU_NAME) || ui->IsMenuOpen(RE::BarterMenu::MENU_NAME)) {
+				// If Journal, Barter or Gift is open, don't consume the input
+				if (ui->IsMenuOpen(RE::JournalMenu::MENU_NAME) || ui->IsMenuOpen(RE::BarterMenu::MENU_NAME) || ui->IsMenuOpen(RE::GiftMenu::MENU_NAME)) {
 					return false;
 				}
 			}
