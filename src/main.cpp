@@ -1,5 +1,4 @@
-﻿#include "PCH.h"
-#include "DialogueEscBlocker.h"
+﻿#include "Hooks.h"
 
 #define DLLEXPORT __declspec(dllexport)
 
@@ -38,20 +37,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* sks
 
 	SKSE::log::info("Game version: {}", skse->RuntimeVersion());
 
-	// Install input handler after input is initialized
-	if (auto* messaging = SKSE::GetMessagingInterface()) {
-		const bool ok = messaging->RegisterListener([](SKSE::MessagingInterface::Message* msg) {
-			if (!msg) return;
-			if (msg->type == SKSE::MessagingInterface::kInputLoaded) {
-				SKSE::log::trace("[Messaging] kInputLoaded -> installing handler");
-				HOAS::Install();
-			}
-		});
-		SKSE::log::info("Registered SKSE messaging listener: {}", ok);
-	} else {
-		SKSE::log::warn("SKSE messaging interface not available; installing handler immediately");
-		HOAS::Install();
-	}
+	Hooks::Install();
 
 	return true;
 }
