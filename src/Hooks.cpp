@@ -9,7 +9,7 @@ namespace Hooks
 		{
 			const auto blocker = DialogueEscBlocker::GetSingleton();
 
-			if (events && blocker->ProcessInputEvents(events))
+			if (events && *events && blocker->ProcessInputEvents(events))
 			{
 				constexpr RE::InputEvent* const dummy[] = { nullptr };
 				func(dispatcher, dummy);
