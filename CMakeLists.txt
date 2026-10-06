@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 4.2)
 project(HoldOnASec VERSION 1.1.1 LANGUAGES CXX)
 
 # Set your project version and specify C++ standard
